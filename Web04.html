@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stylish BMI Calculator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+  background: linear-gradient(to right, #74ebd5, #ACB6E5);
+  font-family: 'Montserrat', sans-serif;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+    .bmi-box {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      padding: 40px;
+      width: 400px;
+      text-align: center;
+    }
+
+    .bmi-box h3 {
+      font-weight: 600;
+      color: #333;
+    }
+
+    input {
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      padding: 12px;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+    }
+
+    #result {
+      font-size: 1.2rem;
+      margin-top: 20px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .gauge-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      margin-top: 30px;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .needle {
+      transform-origin: 100px 100px;
+      transition: transform 0.8s ease;
+    }
+
+    .label {
+  font-size: 0.55rem;
+  text-anchor: middle;
+  fill: black;
+  font-weight: 500;
+}
+  </style>
+</head>
+<body>
+
+<div class="bmi-box">
+  <h3>BMI Calculator</h3>
+  <input type="number" id="weight" class="form-control" placeholder="Weight in kg" />
+  <input type="number" id="height" class="form-control" placeholder="Height in cm" />
+  <button class="btn btn-primary mt-2" onclick="calculateBMI()">Calculate BMI</button>
+  <div id="result"></div>
+
+  <!-- Sliced Gauge -->
+  <div class="gauge-container">
+    <svg viewBox="0 0 200 100">
+      <!-- Slices -->
+      <path d="M100,100 L10,100 A90,90 0 0,1 52.5,19.5 Z" fill="#00bcd4" /> <!-- Underweight -->
+      <path d="M100,100 L52.5,19.5 A90,90 0 0,1 100,10 Z" fill="#4caf50" /> <!-- Normal -->
+      <path d="M100,100 L100,10 A90,90 0 0,1 137.5,19.5 Z" fill="#ff9800" /> <!-- Overweight -->
+      <path d="M100,100 L137.5,19.5 A90,90 0 0,1 190,100 Z" fill="#f44336" /> <!-- Obesity -->
+
+      <!-- Needle -->
+      <line id="needle" x1="100" y1="100" x2="100" y2="20" stroke="black" stroke-width="3" class="needle" />
+
+      <!-- Labels -->
+      <text x="30" y="90" class="label">Under</text>
+      <text x="75" y="40" class="label">Normal</text>
+      <text x="125" y="40" class="label">Over</text>
+      <text x="170" y="90" class="label">Obese</text>
+    </svg>
+  </div>
+</div>
+
+<script>
+  function calculateBMI() {
+    const weight = parseFloat(document.getElementById("weight").value);
+    const heightCm = parseFloat(document.getElementById("height").value);
+    const resultDiv = document.getElementById("result");
+
+    if (!weight || !heightCm || weight <= 0 || heightCm <= 0) {
+      resultDiv.innerHTML = "Please enter valid weight and height.";
+      return;
+    }
+
+    const heightM = heightCm / 100;
+    const bmi = (weight / (heightM * heightM)).toFixed(1);
+    let category = "";
+
+    if (bmi < 18.5) {
+      category = "Underweight";
+    } else if (bmi < 25) {
+      category = "Normal weight";
+    } else if (bmi < 30) {
+      category = "Overweight";
+    } else {
+      category = "Obesity";
+    }
+
+    resultDiv.innerHTML = `Your BMI is <strong>${bmi}</strong> (${category})`;
+
+    // Rotate needle based on BMI
+    const needle = document.getElementById("needle");
+    const clampedBMI = Math.max(10, Math.min(40, parseFloat(bmi))); // Clamp between 10–40
+    const angle = ((clampedBMI - 10) / 30) * 180 - 90; // Map to -90° to +90°
+    needle.style.transform = `rotate(${angle}deg)`;
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
